@@ -10,9 +10,11 @@ public class Server {
     public static void main(String[] args) {
 
         if (args.length != 1) {
-            System.err.println("Usage: java KKMultiServer <port number>");
+            System.err.println("Usage: java Server <port number>");
             System.exit(1);
         }
+
+        System.out.println("Server started at Port: " + args[0]);
 
         int portNumber = Integer.parseInt(args[0]);
         boolean listening = true;
