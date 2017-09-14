@@ -1,5 +1,7 @@
 package com.client.main;
 
+import com.serverclient.util.Util;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -46,9 +48,10 @@ public class Client {
             throw new RuntimeException("HTTP Command not supported: " + command);
         }
 
+//        request = command + " /" + fileName + " HTTP/1.1\n";
         request = command + " /" + fileName + " HTTP/1.1\n" +
                 "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n" +
-                "Host: " + hostName +"\n" +
+                "Host: " + hostName + "\n" +
                 "Accept-Language: en-us\n" +
                 "Accept-Encoding: gzip, deflate\n" +
                 "Connection: Keep-Alive" +
@@ -63,14 +66,31 @@ public class Client {
 
     public void display() {
         String outputFromServer;
+        System.out.println("Displaying...: ");
+
         try {
-            while ((outputFromServer = this.in.readLine()) != null) {
+            while (((outputFromServer = this.in.readLine()) != null)) {
                 System.out.println("echo: " + outputFromServer);
+
+                if (outputFromServer.trim().isEmpty()) {
+                    if (!this.in.ready()) {
+                        break;
+                    }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    private void close() {
+        this.out.close();
+        try {
+            this.in.close();
+            this.clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
@@ -99,37 +119,9 @@ public class Client {
         System.out.println(userInput);
 
         client.submittRequest(userInput);
-        client.display();
-
-//        try {
-//            Socket clientSocket = new Socket(hostName, port);
-//
-//            PrintWriter out =
-//                    new PrintWriter(clientSocket.getOutputStream(), true);
-//            BufferedReader in =
-//                    new BufferedReader(
-//                            new InputStreamReader(clientSocket.getInputStream()));
-
-//            String userInput = "GET /index.html HTTP/1.1\n" +
-//                    "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n" +
-//                    "Host: www.google.com\n" +
-//                    "Accept-Language: en-us\n" +
-//                    "Accept-Encoding: gzip, deflate\n" +
-//                    "Connection: Keep-Alive" +
-//                    "\n\r";
-//            out.println(userInput);
-//
-//            String outputFromServer;
-//            while ((outputFromServer = in.readLine()) != null) {
-//                System.out.println("echo: " + outputFromServer);
-//            }
-//
-//        } catch (UnknownHostException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+//        client.display();
+        String out = Util.display(client.in);
+        System.out.println(out.length());
+        client.close();
     }
-
-
 }
