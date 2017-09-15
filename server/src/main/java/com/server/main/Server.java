@@ -1,5 +1,6 @@
 package com.server.main;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 
@@ -16,10 +17,18 @@ public class Server {
 
         System.out.println("Server started at Port: " + args[0]);
 
+        File file = new File("server/src/main/resources/index.html");
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         int portNumber = Integer.parseInt(args[0]);
         boolean listening = true;
 
-        try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
+        try {
+            ServerSocket serverSocket = new ServerSocket(portNumber);
             while (listening) {
                 new ServerThread(serverSocket.accept()).start();
             }

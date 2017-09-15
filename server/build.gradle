@@ -17,3 +17,7 @@ jar {
 dependencies {
     compile project(":util")
 }
+
+applicationDistribution.from("src/main/resources") {
+    into "resources"
+}
