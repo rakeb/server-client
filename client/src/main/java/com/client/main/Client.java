@@ -25,29 +25,6 @@ public class Client {
         }
     }
 
-//    private void submittRequest(Object userInput) {
-//        this.out.println(userInput);
-//    }
-
-//    public void display() {
-//        String outputFromServer;
-//        System.out.println("Displaying...: ");
-//
-//        try {
-//            while (((outputFromServer = this.in.readLine()) != null)) {
-//                System.out.println("echo: " + outputFromServer);
-//
-//                if (outputFromServer.trim().isEmpty()) {
-//                    if (!this.in.ready()) {
-//                        break;
-//                    }
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     private void close() {
         this.out.close();
         try {
@@ -81,25 +58,26 @@ public class Client {
         // TCP Connection
         client.tcpConnection(hostName, port);
 
+        //Get File
+        InputStream inputStream = null;
+        if (command.equals("PUT")) {
+            inputStream = client.getClass().getResourceAsStream("/files/" + fileName);
+
+            if (inputStream == null) {  //no such file found
+                System.err.println("File not found: " + fileName);
+                exit(1);
+            }
+        }
+
         // Generate HTTP 1.1 request
-        String userInput = Util.generateHttpRequest(command, fileName, hostName);
-        System.out.println(userInput);
+        String userInput = Util.generateHttpRequest(command, fileName, hostName, inputStream);
+        System.out.println("Request: " + userInput);
 
         // Send HTTP 1.1 request
         Util.submit(userInput, client.out);
 
-        //Send File
-        if (command.equals("PUT")) {
-            InputStream inputStream = client.getClass().getResourceAsStream("/test.html");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            Util.display(reader);
-
-            Util.submit(reader, client.out);
-        }
-
         //Display Server Response
-        String out = Util.display(client.in);
+        Util.display(client.in);
 
         //Close connection
         client.close();

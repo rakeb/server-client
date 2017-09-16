@@ -4,7 +4,7 @@ mainClassName = 'com.client.main.Client'
 
 jar {
     from {
-        configurations.compile.collect{ it.isDirectory() ? it : zipTree(it)}
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 
     manifest {
@@ -18,6 +18,6 @@ dependencies {
     compile project(":util")
 }
 
-    applicationDistribution.from("src/main/resources") {
-        into "resources"
-    }
+applicationDistribution.from("src/main/resources") {
+    into "resources"
+}
