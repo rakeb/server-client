@@ -62,7 +62,12 @@ public class Client {
         //Get File
         InputStream inputStream = null;
         if (command.equals("PUT")) {
-            inputStream = client.getClass().getResourceAsStream("/" + fileName);
+            try {
+                inputStream = new FileInputStream(new File(fileName));
+            } catch (IOException e) {
+                e.printStackTrace();
+                inputStream = null;
+            }
 
             if (inputStream == null) {  //no such file found
                 System.err.println("File not found: " + fileName);

@@ -71,7 +71,7 @@ public class Util {
                         "Accept-Language: en-us\r\n" +
                         "content-length: " + inputStream.available() + "\r\n" +
                         "Connection: Keep-Alive\r\n" +
-                        "\n\r";
+                        "\r\n";
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
@@ -93,9 +93,9 @@ public class Util {
         String response = "";
         try {
             response = "HTTP/1.1 " + status + "\r\n" +
-                    "Date: " + getDateHeader() + "\r\n"
-//                    "Content-Type: text/plain\r\n" +
-//                    "Cache-Control: private, max-age=0\r\n"
+                    "Date: " + getDateHeader() + "\r\n" +
+                    "Content-Type: text/plain\r\n" +
+                    "Cache-Control: private, max-age=0\r\n"
             ;
 //                    "Content-Length: " + inputStream == null ? "25" : inputStream.available() + "\r\n" +
 //                    "\r\n";
@@ -182,6 +182,9 @@ public class Util {
 //    }
 
     public static void submit(Object userInput, PrintWriter out) {
+        if (out== null) {
+            System.err.println("Connection closed");
+        }
         if (userInput instanceof BufferedReader) {
             out.println(socketReader((BufferedReader) userInput, false));
         } else {

@@ -48,6 +48,8 @@ public class ClientThread extends Thread {
 
             String sFile = httpRequestParser.getFile();
 
+            System.out.println("sFile: " + sFile);
+
             String response = null;
 
             if (command.equals(Util.HTTP_GET)) {

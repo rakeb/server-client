@@ -33,7 +33,7 @@ public class HttpRequestParser {
                 if (element.equals("")) {
                     element = "\n";
                 }
-                file += element;
+                file += element + "\n";
             }
         }
     }
