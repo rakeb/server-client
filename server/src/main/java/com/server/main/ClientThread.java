@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.net.URL;
 
 import static java.lang.System.exit;
+import static java.lang.System.in;
 import static java.lang.System.setOut;
 
 /**
@@ -42,55 +43,46 @@ public class ClientThread extends Thread {
 
             HttpRequestParser httpRequestParser = new HttpRequestParser(request);
             String command = httpRequestParser.getCommand();
-            String fileName = httpRequestParser.getFileName();
-            String file = httpRequestParser.getFile();
+            String[] fileNames = httpRequestParser.getFileName().split("/");
+            String fileName = fileNames[1];
 
-            String response;
+            String sFile = httpRequestParser.getFile();
+
+            String response = null;
 
             if (command.equals(Util.HTTP_GET)) {
                 InputStream inputStream;
-                inputStream = getClass().getResourceAsStream("files/" + fileName);
+                try {
+                    inputStream = new FileInputStream(new File(fileName));
+                } catch (IOException e) {
+                    inputStream = null;
+                }
 
                 if (inputStream == null) {  //no such file found on server
-                    response = Util.generateHttpResponse(Util.HTTP_NOT_FOUND);
-                    Util.submit(response, out);
+                    response = Util.generateHttpResponse(Util.HTTP_NOT_FOUND, command, inputStream);
+                    Util.submit(response, out); //send response to client
                 } else {    //file found
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                    response = Util.generateHttpResponse(Util.HTTP_200_OK);
-                    Util.submit(response, out); //send ok response to client
-                    Util.submit(reader, out);   //send data to client
+                    response = Util.generateHttpResponse(Util.HTTP_200_OK, command, inputStream);
+                    Util.submit(response, out); //send response to client
+                    inputStream.close();
                 }
             } else if (command.equals(Util.HTTP_PUT)) {
-//                URL filePathUrl = this.getClass().getResource("files");
-//                String filePath = filePathUrl.getPath() + "/" + fileName;
-
-                response = Util.generateHttpResponse(Util.HTTP_200_OK_FILE_CREATED);
+                response = Util.generateHttpResponse(Util.HTTP_200_OK, command, null);
                 Util.submit(response, out); //send ok response to client
-//                fileName.split()
-                PrintWriter writer = new PrintWriter("test.html", "UTF-8");
-                writer.println("test file created");
-                writer.close();
 
-                bufferedReader = new BufferedReader(new FileReader(new File("test.html")));
-                System.out.println(bufferedReader.readLine());;
-//                Util.createFile(fileName, file);
+                File file = new File(fileName);
+                Util.createFile(file.getPath(), sFile);
 
             } else {
                 System.err.println("Command not supported: " + command);
                 exit(1);
             }
 
+            System.out.println("response: " + response);
             socket.close();
 
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            try {
-                bufferedReader.close();
-            } catch (Exception e) {
-
-            }
         }
     }
 }

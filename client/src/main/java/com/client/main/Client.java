@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.Socket;
 
 import static java.lang.System.exit;
+import static java.lang.System.in;
 
 /**
  * Created by mislam7 on 9/13/17.
@@ -61,7 +62,7 @@ public class Client {
         //Get File
         InputStream inputStream = null;
         if (command.equals("PUT")) {
-            inputStream = client.getClass().getResourceAsStream("/files/" + fileName);
+            inputStream = client.getClass().getResourceAsStream("/" + fileName);
 
             if (inputStream == null) {  //no such file found
                 System.err.println("File not found: " + fileName);
@@ -71,6 +72,12 @@ public class Client {
 
         // Generate HTTP 1.1 request
         String userInput = Util.generateHttpRequest(command, fileName, hostName, inputStream);
+        try {
+            if (inputStream != null)
+                inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("Request: " + userInput);
 
         // Send HTTP 1.1 request
